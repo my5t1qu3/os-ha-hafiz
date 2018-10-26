@@ -1,0 +1,14 @@
+---
+# handlers file for nova
+- name: restart nova services
+  service: name=openstack-nova-api state=restarted
+- name: restart nova services
+  service: name=openstack-nova-consoleauth state=restarted
+- name: restart nova services
+  service: name=openstack-nova-scheduler state=restarted
+- name: restart nova services
+  service: name=openstack-nova-conductor state=restarted
+- name: restart nova services
+  service: name=openstack-nova-novncproxy state=restarted
+- name: restart httpd service
+  service: name=httpd state=restarted

@@ -1,0 +1,39 @@
+---
+- name: install rabbitmq-server package
+  yum: name=rabbitmq-server state=latest
+
+- name: copy erlang cookie
+  template: src=erlang.cookie.j2 dest=/var/lib/rabbitmq/.erlang.cookie
+
+- name: set ownership and permission erlang cookie
+  file: path=/var/lib/rabbitmq/.erlang.cookie owner=rabbitmq group=rabbitmq mode=0400
+
+- name: start rabbitmq-server service
+  service: name=rabbitmq-server state=started enabled=yes
+
+- name: stop rabbitmq app
+  shell: rabbitmqctl stop_app
+  when: inventory_hostname != 'controller1'
+
+- name: joining node other than controller1
+  shell: rabbitmqctl join_cluster rabbit@controller1
+  when: inventory_hostname != 'controller1'
+
+- name: start rabbitmq app
+  shell: rabbitmqctl start_app
+  when: inventory_hostname != 'controller1'
+
+- name: copy ha-mode.sh
+  template: src=ha-mode.sh.j2 dest=/tmp/ha-mode.sh mode=0700
+
+- name: exec ha-mode all
+  shell: /tmp/ha-mode.sh
+
+- name: create openstack user
+  shell: rabbitmqctl add_user openstack {{ rabbitmq_pw }}
+  when: inventory_hostname == 'controller1'
+
+- name: set permission openstack user
+  shell: rabbitmqctl set_permissions openstack \".*\" \".*\" \".*\"
+  when: inventory_hostname == 'controller1'
+

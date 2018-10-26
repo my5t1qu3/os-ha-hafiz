@@ -1,0 +1,8 @@
+---
+# tasks file for glance
+- import_tasks: glance.yml
+- name: restart glance services
+  service: name=openstack-glance-api state=restarted
+- name: restart glance services
+  service: name=openstack-glance-resgistry state=restarted
+

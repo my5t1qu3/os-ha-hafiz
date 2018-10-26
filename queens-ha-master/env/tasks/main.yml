@@ -1,0 +1,6 @@
+---
+# tasks file for env
+- import_tasks: resolver.yml
+- import_tasks: packages.yml
+- import_tasks: ntp.yml
+- import_tasks: memcached.yml

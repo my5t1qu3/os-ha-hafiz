@@ -1,0 +1,18 @@
+---
+- name: open selinux port client connection
+  seport: ports=3306 proto=tcp setype=mysqld_port_t state=present 
+
+- name: open selinux port replication traffic (tcp)
+  seport: ports=4567 proto=tcp setype=mysqld_port_t state=present 
+
+- name: open selinux port replication traffic (udp)
+  seport: ports=4567 proto=udp setype=mysqld_port_t state=present 
+
+- name: open selinux port incremental state transfer
+  seport: ports=4568 proto=tcp setype=mysqld_port_t state=present 
+
+- name: open selinux port state snapshot transfer
+  seport: ports=4444 proto=tcp setype=mysqld_port_t state=present 
+
+- name: set selinux permissive for mariadb
+  selinux_permissive: name=mysqld_t permissive=true

@@ -1,0 +1,21 @@
+---
+- name: apply the environment configurations to all controllers
+  hosts: controllers
+  roles:
+#  - env
+#  - mariadb
+  - rabbitmq
+#  - haproxy
+#  - pcspf
+
+- name: apply the environment configurations to controller1
+  hosts: controller1
+  roles:
+#  - pcs
+
+- name: apply the openstack configurations to all controllers
+  hosts: controllers
+  roles:
+#  - keystone
+#  - glance
+  - nova

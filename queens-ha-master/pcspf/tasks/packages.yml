@@ -1,0 +1,10 @@
+---
+- name: install required packages
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - corosync
+    - fence-agents-all
+    - pacemaker
+    - pcs
+    - resource-agents

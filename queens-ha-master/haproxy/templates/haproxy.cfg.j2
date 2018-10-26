@@ -1,0 +1,152 @@
+ global
+  chroot  /var/lib/haproxy
+  daemon
+  group  haproxy
+  maxconn  4000
+  pidfile  /var/run/haproxy.pid
+  user  haproxy
+
+defaults
+  log  global
+  maxconn  4000
+  option  redispatch
+  retries  3
+  timeout  http-request 10s
+  timeout  queue 1m
+  timeout  connect 10s
+  timeout  client 1m
+  timeout  server 1m
+  timeout  check 10s
+
+ listen dashboard_cluster
+  bind {{ vip }}:443
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:443 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:443 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:443 check inter 2000 rise 2 fall 5
+
+ listen galera_cluster
+  bind {{ vip }}:3306
+  balance  source
+  option  mysql-check
+  server controller1 {{ controller1_ip_man }}:3306 check port 9200 inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:3306 backup check port 9200 inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:3306 backup check port 9200 inter 2000 rise 2 fall 5
+
+ listen glance_api_cluster
+  bind {{ vip }}:9292
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:9292 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:9292 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:9292 check inter 2000 rise 2 fall 5
+
+ listen glance_registry_cluster
+  bind {{ vip }}:9191
+  balance  source
+  option  tcpka
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:9191 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:9191 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:9191 check inter 2000 rise 2 fall 5
+
+ listen keystone_admin_cluster
+  bind {{ vip }}:35357
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:35357 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:35357 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:35357 check inter 2000 rise 2 fall 5
+
+ listen keystone_public_internal_cluster
+  bind {{ vip }}:5000
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:5000 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:5000 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:5000 check inter 2000 rise 2 fall 5
+
+ listen nova_ec2_api_cluster
+  bind {{ vip }}:8773
+  balance  source
+  option  tcpka
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:8773 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:8773 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:8773 check inter 2000 rise 2 fall 5
+
+ listen nova_compute_api_cluster
+  bind {{ vip }}:8774
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:8774 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:8774 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:8774 check inter 2000 rise 2 fall 5
+
+ listen nova_metadata_api_cluster
+  bind {{ vip }}:8775
+  balance  source
+  option  tcpka
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:8775 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:8775 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:8775 check inter 2000 rise 2 fall 5
+
+ listen cinder_api_cluster
+  bind {{ vip }}:8776
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:8776 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:8776 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:8776 check inter 2000 rise 2 fall 5
+
+ listen ceilometer_api_cluster
+  bind {{ vip }}:8777
+  balance  source
+  option  tcpka
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:8777 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:8777 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:8777 check inter 2000 rise 2 fall 5
+
+ listen nova_vncproxy_cluster
+  bind {{ vip }}:6080
+  balance  source
+  option  tcpka
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:6080 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:6080 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:6080 check inter 2000 rise 2 fall 5
+
+ listen neutron_api_cluster
+  bind {{ vip }}:9696
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+  server controller1 {{ controller1_ip_man }}:9696 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:9696 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:9696 check inter 2000 rise 2 fall 5
+
+ listen swift_proxy_cluster
+  bind {{ vip }}:8080
+  balance  source
+  option  tcplog
+  option  tcpka
+  server controller1 {{ controller1_ip_man }}:8080 check inter 2000 rise 2 fall 5
+  server controller2 {{ controller2_ip_man }}:8080 check inter 2000 rise 2 fall 5
+  server controller3 {{ controller3_ip_man }}:8080 check inter 2000 rise 2 fall 5
+

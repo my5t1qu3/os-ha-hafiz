@@ -1,0 +1,27 @@
+---
+controller1_ip_man: 10.30.30.11
+controller2_ip_man: 10.30.30.12
+controller3_ip_man: 10.30.30.13
+controller1_int_man: eth0
+controller2_int_man: eth0
+controller3_int_man: eth0
+controller1_int_ext: eth1
+controller2_int_ext: eth1
+controller3_int_ext: eth1
+vip: 10.30.30.10
+vip_prefix: 24
+root_dbpw_old: c2791790f41c2f3a5c65278d
+root_dbpw: c2791790f41c2f3a5c65278d
+keystone_dbpw: ac0c5ee08391cb60792b
+glance_dbpw: 530c22adea6029410caf
+clustercheck_dbpw: caef30724034922926ce
+hacluster_pw: dd1fcd57a06a79ad1428
+admin_pw: c6e5afe865dc33e796d2
+glance_pw: acb247c5d7c9a0bd4910
+nova_dbpw: 1689e3b5f0f9b4a1361d
+nova_pw: 74efc7aac9b80b30d18e
+placement_pw: dffa1fbbf48552805f15
+rabbitmq_pw: 47ad63815d2125fc1475
+neutron_dbpw: ac4d46dcb5352349cfab
+neutron_pw: e6ea2a834ab82c558608
+metadata_secret: 149abdacd65fb1e890b6

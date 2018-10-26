@@ -1,0 +1,44 @@
+---
+- name: insert firewalld dashboard rule
+  firewalld: port=443/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld galera rule
+  firewalld: port=3306/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld glance api rule
+  firewalld: port=9292/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld glance registry rule
+  firewalld: port=9191/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld keystone admin rule
+  firewalld: port=35357/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld keystone public internal rule
+  firewalld: port=5000/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld nova ec2 api rule
+  firewalld: port=8773/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld nova compute api rule
+  firewalld: port=8774/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld nova metadata api rule
+  firewalld: port=8775/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld cinder api rule
+  firewalld: port=8776/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld ceilometer api rule
+  firewalld: port=8777/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld nova vnc proxy rule
+  firewalld: port=6080/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld neutron api rule
+  firewalld: port=9696/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld swift proxy rule
+  firewalld: port=8080/tcp permanent=true state=enabled immediate=yes
+
+

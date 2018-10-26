@@ -1,0 +1,18 @@
+---
+- name: insert firewalld client connections port rule
+  firewalld: port=3306/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld replication traffic rule (tcp)
+  firewalld: port=4567/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld replication traffic rule (udp)
+  firewalld: port=4567/udp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld incremental state transfer rule
+  firewalld: port=4568/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld state snapshot transfer rule
+  firewalld: port=4444/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld galera-monitor rule
+  firewalld: port=9200/tcp permanent=true state=enabled immediate=yes

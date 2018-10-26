@@ -1,0 +1,39 @@
+---
+- name: install mariadb packages
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - mariadb-server-galera
+    - MySQL-python
+
+- name: create mariadb configuration file
+  template: src=galera.cnf.j2 dest=/etc/my.cnf.d/galera.cnf
+  notify: restart mariadb
+
+- name: check galera_new_cluster run once
+  stat: path=/var/log/mariadb/galera_new_cluster.log
+  register: galera_new_cluster
+  when: inventory_hostname == 'controller1'
+
+- name: run galera_new_cluster
+  shell: galera_new_cluster > /var/log/mariadb/galera_new_cluster.log
+  when:
+    - inventory_hostname == 'controller1'
+    - galera_new_cluster.stat.exists == False
+
+- name: start mariadb service on controller1
+  service: name=mariadb state=started enabled=yes
+  when: inventory_hostname == 'controller1'
+
+- name: start mariadb service other than controller1
+  service: name=mariadb state=started enabled=yes
+  when: inventory_hostname != 'controller1'
+
+- name: set db root password
+  mysql_user: login_user=root login_password={{ root_dbpw_old }} name=root password={{ root_dbpw }}
+
+- name: delete test database
+  mysql_db: login_user=root login_password={{ root_dbpw }} name={{item}} state=absent
+  with_items:
+  - test
+  - test\_%

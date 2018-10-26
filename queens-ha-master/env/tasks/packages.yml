@@ -1,0 +1,25 @@
+---
+- name: install required repos
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - centos-release-openstack-queens
+    - epel-release
+
+- name: update all packages
+  yum: name=* state=latest
+
+- name: install required packages
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - vim
+    - htop
+    - crudini
+    - rsync
+    - policycoreutils-python
+    - xinetd
+    - python-openstackclient
+    - openstack-selinux
+    - python2-openstacksdk
+    - python2-shade

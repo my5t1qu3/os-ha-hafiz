@@ -1,0 +1,26 @@
+[DEFAULT]
+bind_host = {{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}
+enable_v1_api=False
+enable_v2_api=True
+[database]
+connection = mysql+pymysql://glance:{{ glance_dbpw }}@{{ vip }}/glance
+[keystone_authtoken]
+auth_uri = http://{{ vip }}:5000
+auth_url = http://{{ vip }}:5000
+memcached_servers = {{ vip }}:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = glance
+password = {{ glance_pw }}
+[matchmaker_redis]
+[oslo_messaging_amqp]
+[oslo_messaging_kafka]
+[oslo_messaging_notifications]
+[oslo_messaging_rabbit]
+[oslo_messaging_zmq]
+[oslo_policy]
+[paste_deploy]
+flavor = keystone
+[profiler]

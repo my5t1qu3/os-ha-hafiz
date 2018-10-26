@@ -1,0 +1,5 @@
+---
+# tasks file for haproxy
+- import_tasks: sysctl.yml
+- import_tasks: firewall.yml
+- import_tasks: haproxy.yml

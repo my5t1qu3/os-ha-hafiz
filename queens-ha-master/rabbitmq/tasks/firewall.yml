@@ -1,0 +1,7 @@
+---
+- name: insert firewalld rabbitmq rule
+  firewalld: port=4369/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld epmd rule
+  firewalld: port=25672/tcp permanent=true state=enabled immediate=yes
+

@@ -1,0 +1,14 @@
+---
+- name: create log directory
+  file: path=/var/log/hacluster state=directory
+
+- name: start pcsd service
+  service: name=pcsd state=started enabled=yes
+
+- name: check hacluster user password run once
+  stat: path=/var/log/hacluster/hacluster_pw.log
+  register: cluster_pw
+
+- name: set password for hacluster user
+  shell: echo {{ hacluster_pw }} | passwd --stdin hacluster > /var/log/hacluster/hacluster_pw.log
+  when:  cluster_pw.stat.exists == False

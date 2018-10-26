@@ -1,0 +1,3 @@
+- name: create haproxy sysctl configuration file
+  template: src=50-haproxy.conf.j2 dest=/usr/lib/sysctl.d/50-haproxy.conf
+  notify: load sysctl parameters

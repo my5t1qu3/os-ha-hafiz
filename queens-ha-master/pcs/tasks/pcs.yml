@@ -1,0 +1,44 @@
+---
+- name: check cluster auth run once
+  stat: path=/var/log/hacluster/haclusterauth.log
+  register: cluster_auth
+
+- name: set cluster auth
+  shell: pcs cluster auth controller1 controller2 controller3 -u hacluster -p {{ hacluster_pw }} --force > /var/log/hacluster/haclusterauth.log
+  when: cluster_auth.stat.exists == False
+
+- name: check cluster setup run once
+  stat: path=/var/log/hacluster/haclustersetup.log
+  register: cluster_setup
+
+- name: create cluster
+  shell: pcs cluster setup --force --name os-ha controller1 controller2 controller3 > /var/log/hacluster/haclustersetup.log
+  when: cluster_setup.stat.exists == False
+
+- name: start cluster
+  shell: pcs cluster start --all > /var/log/hacluster/haclusterstart.log
+
+- name: enable cluster
+  shell: pcs cluster enable --all > /var/log/hacluster/haclusterenable.log
+
+- name: set cluster properties
+  shell: pcs property set pe-warn-series-max=1000 pe-input-series-max=1000 pe-error-series-max=1000 cluster-recheck-interval=5min
+
+- name: disable stonith
+  shell: pcs property set stonith-enabled=false
+
+- name: check the vip resource creation run once
+  stat: path=/var/log/hacluster/resource_vip.log
+  register: resource_vip
+
+- name: create the vip resource
+  shell: pcs resource create vip ocf:heartbeat:IPaddr2 ip="{{ vip }}" cidr_netmask="{{ vip_prefix }}" op monitor interval="30s" > /var/log/hacluster/resource_vip.log
+  when: resource_vip.stat.exists == False
+
+- name: check the haproxy resource creation run once
+  stat: path=/var/log/hacluster/resource_haproxy.log
+  register: resource_haproxy
+
+- name: create haproxy resource
+  shell: pcs resource create lb-haproxy systemd:haproxy --clone && pcs constraint order start vip then lb-haproxy-clone kind=Optional && pcs constraint colocation add lb-haproxy-clone with vip > /var/log/hacluster/resource_haproxy.log
+  when: resource_haproxy.stat.exists == False

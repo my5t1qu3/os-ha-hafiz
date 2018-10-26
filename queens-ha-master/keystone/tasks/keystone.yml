@@ -1,0 +1,94 @@
+---
+- name: create keystone database
+  mysql_db: login_user=root login_password={{ root_dbpw }} name=keystone state=present
+  when: inventory_hostname == 'controller1'
+
+- name: grant keystone database local host access
+  mysql_user: login_user=root login_password={{ root_dbpw }} name=keystone password={{ keystone_dbpw }} priv='keystone.*:ALL'
+  when: inventory_hostname == 'controller1'
+
+- name: grant keystone database controller1 host access
+  mysql_user: login_user=root login_password={{ root_dbpw }} name=keystone password={{ keystone_dbpw }} priv='keystone.*:ALL' host=controller1
+  when: inventory_hostname == 'controller1'
+
+- name: grant keystone database controller2 host access
+  mysql_user: login_user=root login_password={{ root_dbpw }} name=keystone password={{ keystone_dbpw }} priv='keystone.*:ALL' host=controller2
+  when: inventory_hostname == 'controller1'
+
+- name: grant keystone database controller3 host access
+  mysql_user: login_user=root login_password={{ root_dbpw }} name=keystone password={{ keystone_dbpw }} priv='keystone.*:ALL' host=controller3
+  when: inventory_hostname == 'controller1'
+
+- name: grant keystone database any host access
+  mysql_user: login_user=root login_password={{ root_dbpw }} name=keystone password={{ keystone_dbpw }} priv='keystone.*:ALL' host=%
+  when: inventory_hostname == 'controller1'
+
+- name: install keystone packages
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - openstack-keystone
+    - httpd
+    - mod_wsgi
+
+- name: create keystone configuration file
+  template: src=keystone.conf.j2 dest=/etc/keystone/keystone.conf
+
+- name: create ansible temporary directory
+  file: path=/var/lib/keystone/.ansible/tmp state=directory mode=0755
+  become: yes
+  become_user: keystone
+  when: inventory_hostname == 'controller1'
+
+- name: populate keystone database
+  shell: keystone-manage db_sync
+  become: yes
+  become_user: keystone
+  when: inventory_hostname == 'controller1'
+
+- name: initialize fernet
+  shell: keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+  when: inventory_hostname == 'controller1'
+
+- name: initialize credential
+  shell: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+  when: inventory_hostname == 'controller1'
+
+- name: bootstrap keystone
+  shell: keystone-manage bootstrap --bootstrap-password {{ admin_pw }} --bootstrap-admin-url http://{{ vip }}:5000/v3/ --bootstrap-internal-url http://{{ vip }}:5000/v3/ --bootstrap-public-url http://{{ vip }}:5000/v3/ --bootstrap-region-id RegionOne
+  when: inventory_hostname == 'controller1'
+
+- name: create wsgi keystone configuration file
+  template: src=wsgi-keystone.conf.j2 dest=/etc/httpd/conf.d/wsgi-keystone.conf
+  notify: restart httpd service
+
+- name: start httpd service
+  service: name=httpd state=started enabled=yes
+
+- name: check the keystone resource creation run once
+  stat: path=/var/log/hacluster/resource_keystone.log
+  register: resource_keystone
+  when: inventory_hostname == 'controller1'
+
+- name: create keystone resource
+  shell: pcs resource create wsgi-keystone systemd:httpd --clone interleave=true > /var/log/hacluster/resource_keystone.log
+  when:
+    - inventory_hostname == 'controller1'
+    - resource_keystone.stat.exists == False
+    
+- name: create os client env script
+  template: src=admin-openrc.j2 dest=/root/admin-openrc
+
+- name: create openstack directory
+  file: path=/etc/openstack state=directory mode=0755
+
+- name: create clouds.yaml
+  template: src=clouds.yaml.j2 dest=/etc/openstack/clouds.yaml
+
+- name: create service project
+  os_project: cloud=openstack state=present name=service description="Service Project" domain_id=default enabled=True
+  when: inventory_hostname == 'controller1'
+
+- name: create user role
+  os_keystone_role: cloud=openstack state=present name=user
+  when: inventory_hostname == 'controller1'

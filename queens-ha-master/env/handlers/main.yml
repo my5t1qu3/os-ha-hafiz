@@ -1,0 +1,4 @@
+---
+# handlers file for env
+  - name: restart memcached
+    service: name=memcached state=restarted

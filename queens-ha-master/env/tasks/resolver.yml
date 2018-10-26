@@ -1,0 +1,3 @@
+---
+- name: copy host resolver
+  template: src=hosts.j2 dest=/etc/hosts

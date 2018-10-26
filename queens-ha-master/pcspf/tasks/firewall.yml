@@ -1,0 +1,9 @@
+---
+- name: insert firewalld pcs port rule
+  firewalld: port=2224/tcp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld corosync port rule
+  firewalld: port=5405/udp permanent=true state=enabled immediate=yes
+
+- name: insert firewalld corosync port range rule
+  firewalld: port=30000-65535/udp permanent=true state=enabled immediate=yes
